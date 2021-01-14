@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase_auth/screens/register_email.dart';
+import 'package:flutter_firebase_auth/screens/email_auth.dart';
 import 'package:flutter_firebase_auth/utils.dart';
 
 void main() {
@@ -30,8 +29,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // Create the initialization Future outside of `build`:
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
         children: [
           RegisterEmailSection(),
-          // EmailPasswordLoginForm(),
+          EmailPasswordLoginForm(),
           // EmailLinkSignInSection(),
         ],
       ));

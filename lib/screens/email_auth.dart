@@ -58,6 +58,65 @@ class _RegisterEmailSectionState extends State<RegisterEmailSection>
   }
 }
 
+
+class EmailPasswordLoginForm extends StatefulWidget {
+  @override
+  _EmailPasswordLoginFormState createState() => _EmailPasswordLoginFormState();
+}
+
+class _EmailPasswordLoginFormState extends State<EmailPasswordLoginForm>
+    with EmailAuthMixin {
+  void _signInWithEmailAndPassword() async {
+    final user = (await auth.signInWithEmailAndPassword(
+        email: _emailController.text, password: _passwordController.text))
+        .user;
+
+    if (user != null) {
+      setState(() {
+        _success = true;
+        _userEmail = user.email;
+      });
+    } else {
+      setState(() {
+        _success = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              alignment: Alignment.center,
+              child: const Text('Test sign in with email and password'),
+            ),
+            buildEmailTextFormField(),
+            buildPasswordTextFormField(),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              alignment: Alignment.center,
+              child: RaisedButton(
+                onPressed: () async {
+                  if (_formKey.currentState.validate()) {
+                    _signInWithEmailAndPassword();
+                  }
+                },
+                child: const Text('Submit'),
+              ),
+            ),
+            buildFeedbackWidget(
+                successMsg: 'Sign In Successful', failMsg: 'Sign In Failed'),
+          ],
+        ));
+  }
+}
+
+
 mixin EmailAuthMixin<T extends StatefulWidget> on State<T> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
