@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           RegisterEmailSection(),
           EmailPasswordLoginForm(),
-          // EmailLinkSignInSection(),
+          EmailLinkSignInSection(),
         ],
       ));
   }

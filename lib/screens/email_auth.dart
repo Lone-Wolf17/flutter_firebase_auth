@@ -116,6 +116,123 @@ class _EmailPasswordLoginFormState extends State<EmailPasswordLoginForm>
   }
 }
 
+class EmailLinkSignInSection extends StatefulWidget {
+  @override
+  _EmailLinkSignInSectionState createState() => _EmailLinkSignInSectionState();
+}
+
+class _EmailLinkSignInSectionState extends State<EmailLinkSignInSection>
+    with EmailAuthMixin, WidgetsBindingObserver {
+  String _userID;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      final PendingDynamicLinkData data =
+      await FirebaseDynamicLinks.instance.getInitialLink();
+
+      if (data?.link != null) {
+        handleLink(data?.link);
+      }
+      FirebaseDynamicLinks.instance.onLink(
+          onSuccess: (PendingDynamicLinkData dynamicLink) async {
+            final Uri deepLink = dynamicLink?.link;
+            handleLink(deepLink);
+          }, onError: (OnLinkErrorException e) async {
+        print('onLinkError');
+        print(e.message);
+      });
+    }
+  }
+
+  void handleLink(Uri link) async {
+    if (link != null) {
+      final User user = (await auth.signInWithEmailLink(
+        email: _userEmail,
+        emailLink: link.toString(),
+      )).user;
+
+      if (user != null) {
+        setState(() {
+          _userID = user.uid;
+          _success = true;
+        });
+      } else {
+        setState(() {
+          _success = false;
+        });
+      }
+    } else {
+      setState(() {
+        _success = false;
+      });
+    }
+    setState(() {});
+  }
+
+  _signInWithEmailAndLink() async {
+    _userEmail = _emailController.text;
+
+    ActionCodeSettings actionCodeSettings = ActionCodeSettings(
+        url: 'https://korex006.page.link',
+        handleCodeInApp: true,
+        androidPackageName: 'com.gmail.korex006.flutter_firebase_auth',
+        // androidInstallApp: true,
+        androidMinimumVersion: '1');
+
+    return await auth.sendSignInLinkToEmail(
+        email: _userEmail, actionCodeSettings: actionCodeSettings);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            child: const Text('Test sign in with email and link'),
+            padding: const EdgeInsets.all(16),
+            alignment: Alignment.center,
+          ),
+          buildEmailTextFormField(),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            alignment: Alignment.center,
+            child: RaisedButton(
+              onPressed: () async {
+                if (_formKey.currentState.validate()) {
+                  _signInWithEmailAndLink();
+                }
+              },
+              child: const Text('Submit'),
+            ),
+          ),
+          buildFeedbackWidget(
+              successMsg: 'Successfully signed in, uid: ' + _userID,
+              failMsg: 'Sign in failed')
+        ],
+      ),
+    );
+  }
+}
+
+
+
 
 mixin EmailAuthMixin<T extends StatefulWidget> on State<T> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
