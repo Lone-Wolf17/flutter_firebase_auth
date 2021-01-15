@@ -16,9 +16,7 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text('Firebase Auth Demo'),
-          actions: [
-            buildSignOutActionButton()
-          ],
+          actions: buildSignOutActionButton()
         ),
         drawer: buildDrawer(context),
         body:  ListView(
@@ -164,7 +162,7 @@ class _EmailLinkSignInSectionState extends State<_EmailLinkSignInSection>
 
   @override
   void dispose() {
-    _emailController.dispose();
+    // _emailController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -178,9 +176,9 @@ class _EmailLinkSignInSectionState extends State<_EmailLinkSignInSection>
       final PendingDynamicLinkData data =
       await FirebaseDynamicLinks.instance.getInitialLink();
 
-      // if (data?.link != null) {
-      //   handleLink(data?.link);
-      // }
+      if (data?.link != null) {
+        handleLink(data?.link);
+      }
       FirebaseDynamicLinks.instance.onLink(
           onSuccess: (PendingDynamicLinkData dynamicLink) async {
             print('point success');

@@ -78,6 +78,8 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
     _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,9 +87,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: Text('Phone Auth Demo'),
-        actions: [
-          buildSignOutActionButton()
-        ],
+        actions: buildSignOutActionButton(),
       ),
       drawer: buildDrawer(context),
       body: Container(
