@@ -1,14 +1,18 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase_auth/screens/email_auth.dart';
-import 'package:flutter_firebase_auth/utils.dart';
+import 'package:flutter_firebase_auth/screens/email_auth_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
 
 class MyApp extends StatelessWidget {
+
+  // Create the initialization Future outside of `build`:
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -18,53 +22,40 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(),
-    );
-  }
-}
+      home: Builder(
+        builder: (BuildContext context) {
+          return FutureBuilder(
+            // Initialize FlutterFire:
+              future: _initialization,
+              builder: (context, snapshot) {
 
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
+                // Check for errors
+                if (snapshot.hasError) {
+                  return Container(
+                    alignment: Alignment.center,
+                    child: Text('Something went wrong'),
+                  );
+                }
 
-class _MyHomePageState extends State<MyHomePage> {
+                // Once complete, show your application
+                if (snapshot.connectionState == ConnectionState.done) {
+                  // Navigator.of(context)
+                  //     .pushReplacement(MaterialPageRoute(builder: (_) => EmailAuthScreen()));
+                  return EmailAuthScreen();
+                }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Firebase Auth Demo'),
-        actions: [
-          Builder(
-            builder: (BuildContext context) {
-              return FlatButton(
-                child: const Text('Sign out'),
-                onPressed: () async {
-                  final User user = auth.currentUser;
-                  if (user == null) {
-                    Scaffold.of(context).showSnackBar(
-                        const SnackBar(content: Text('No One has signed in.')));
-                    return;
-                  }
-                  await auth.signOut();
-                  final String uid = user.uid;
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text(uid + ' has successfully signed out.')));
-                },
-              );
-            },
-          )
-        ],
+                // Otherwise, show something whilst waiting for initialization to complete
+                return Container(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                );
+
+
+                return EmailAuthScreen();
+              }
+          );
+        },
       ),
-      body:  ListView(
-        scrollDirection: Axis.vertical,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-        children: [
-          RegisterEmailSection(),
-          EmailPasswordLoginForm(),
-          EmailLinkSignInSection(),
-        ],
-      ));
+    );
   }
 }
