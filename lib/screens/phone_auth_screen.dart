@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_auth/utils.dart';
 import 'package:sms_autofill/sms_autofill.dart';
@@ -88,6 +85,9 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: Text('Phone Auth Demo'),
+        actions: [
+          buildSignOutActionButton()
+        ],
       ),
       drawer: buildDrawer(context),
       body: Container(

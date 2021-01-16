@@ -46,3 +46,25 @@ buildDrawer(BuildContext context) {
     ),
   );
 }
+
+buildSignOutActionButton () {
+  return Builder(
+    builder: (BuildContext context) {
+      return FlatButton(
+        child: const Text('Sign out'),
+        onPressed: () async {
+          final User user = auth.currentUser;
+          if (user == null) {
+            Scaffold.of(context).showSnackBar(
+                const SnackBar(content: Text('No One has signed in.')));
+            return;
+          }
+          await auth.signOut();
+          final String uid = user.uid;
+          Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text(uid + ' has successfully signed out.')));
+        },
+      );
+    },
+  );
+}
